@@ -1,5 +1,13 @@
 import chalk from "chalk";
 
+export const assert = (result: boolean): result is true => {
+  if (!result) {
+    throw new Error("Assetion failed");
+  }
+
+  return true;
+};
+
 export class DisplayableError extends Error {
   constructor(
     public message: string,
@@ -42,17 +50,3 @@ export class DisplayableError extends Error {
     );
   }
 }
-
-export class AssertionFailed extends Error {
-  constructor() {
-    super("Assetion failed");
-  }
-}
-
-export const assert = (result: boolean): result is true => {
-  if (!result) {
-    throw new AssertionFailed();
-  }
-
-  return true;
-};
