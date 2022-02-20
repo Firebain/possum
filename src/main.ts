@@ -6,7 +6,13 @@ import fs from "fs";
 
 const main = () => {
   try {
-    const code = "let a = 2; let b = 3;";
+    const code = `
+      extern puts(s: &[i8]): i32
+
+      let a = 2 
+      let b = 3
+    `;
+
     const tokens = tokenize(code);
 
     const ast = parse(code, tokens);

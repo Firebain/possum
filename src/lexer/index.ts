@@ -115,7 +115,7 @@ class Cursor {
   find_len(predicate: (char: string) => boolean): number {
     let index = this.index;
 
-    while (predicate(this.str[index])) {
+    while (this.str[index] !== undefined && predicate(this.str[index])) {
       index += 1;
     }
 

@@ -1,10 +1,58 @@
-import { Node } from "../parser";
+import { Node, Type } from "../parser";
 import llvm from "llvm-bindings";
+
+const codegen_type = (type: Type, builder: llvm.IRBuilder): llvm.Type => {
+  if (type.type === "keyword") {
+    if (type.element === "i8") {
+      return builder.getInt8Ty();
+    }
+
+    if (type.element === "i32") {
+      return builder.getInt32Ty();
+    }
+
+    if (type.element === "string") {
+      return builder.getInt8PtrTy();
+    }
+  }
+
+  if (type.type === "ref") {
+    return builder.getInt8PtrTy();
+  }
+
+  // if (type.type === "array_type") {
+  //   return builder.getInt8PtrTy();
+  // }
+
+  throw new Error("Unexpected type while codegen");
+};
 
 export const codegen = (nodes: Node[]) => {
   const context = new llvm.LLVMContext();
   const mod = new llvm.Module("main", context);
   const builder = new llvm.IRBuilder(context);
+
+  for (const node of nodes) {
+    if (node.type === "extern_declaration") {
+      const return_type = codegen_type(node.return, builder);
+      const params = node.parameters.map((parameter) =>
+        codegen_type(parameter.type, builder)
+      );
+      const function_type = llvm.FunctionType.get(return_type, params, false);
+
+      const fn = llvm.Function.Create(
+        function_type,
+        llvm.Function.LinkageTypes.ExternalLinkage,
+        node.name,
+        mod
+      );
+
+      if (llvm.verifyFunction(fn)) {
+        console.error("Verifying function failed");
+        process.exit();
+      }
+    }
+  }
 
   const mainReturnType = builder.getInt32Ty();
   const mainFunctionType = llvm.FunctionType.get(mainReturnType, false);
