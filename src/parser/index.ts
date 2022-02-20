@@ -60,7 +60,7 @@ class Cursor {
           name,
           initializer: {
             type: "number",
-            value,
+            value: Number(value),
           },
         };
       }

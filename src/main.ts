@@ -1,5 +1,8 @@
 import { tokenize, UnexpectedSymbol } from "./lexer";
 import { parse, UnexpectedToken, UnexpectedEOF } from "./parser";
+import { codegen } from "./codegen";
+import path from "path";
+import fs from "fs";
 
 const main = () => {
   try {
@@ -8,7 +11,17 @@ const main = () => {
 
     const ast = parse(code, tokens);
 
-    console.log(ast);
+    const module = codegen(ast);
+
+    const file_name = "main.ll";
+    const build_dir = path.join(__dirname, "..", "build");
+    if (!fs.existsSync(build_dir)) {
+      fs.mkdirSync(build_dir);
+    }
+
+    const file_path = path.join(build_dir, file_name);
+    module.print(file_path);
+    module.print();
   } catch (err) {
     if (err instanceof UnexpectedSymbol) {
       err.display();
@@ -33,61 +46,3 @@ const main = () => {
 };
 
 main();
-
-// import llvm from "llvm-bindings";
-
-// const context = new llvm.LLVMContext();
-// const mod = new llvm.Module("main", context);
-// const builder = new llvm.IRBuilder(context);
-
-// const str = builder.CreateGlobalString("Hello World", "str", 0, mod);
-
-// const putsReturnType = builder.getInt32Ty();
-// const putsParamsTypes = [builder.getInt8PtrTy()];
-// const putsFunctionType = llvm.FunctionType.get(
-//   putsReturnType,
-//   putsParamsTypes,
-//   false
-// );
-// const puts = llvm.Function.Create(
-//   putsFunctionType,
-//   llvm.Function.LinkageTypes.ExternalLinkage,
-//   "puts",
-//   mod
-// );
-
-// const mainReturnType = builder.getInt32Ty();
-// const mainFunctionType = llvm.FunctionType.get(mainReturnType, false);
-// const main = llvm.Function.Create(
-//   mainFunctionType,
-//   llvm.Function.LinkageTypes.ExternalLinkage,
-//   "main",
-//   mod
-// );
-
-// const start = llvm.BasicBlock.Create(context, undefined, main);
-// builder.SetInsertPoint(start);
-
-// const call = builder.CreateCall(puts, [
-//   builder.CreatePointerCast(str, builder.getInt8PtrTy(), "test"),
-// ]);
-
-// const result = builder.getInt32(0);
-// builder.CreateRet(result);
-
-// if (llvm.verifyFunction(main)) {
-//   console.error("Verifying function failed");
-//   process.exit();
-// }
-
-// if (llvm.verifyFunction(puts)) {
-//   console.error("Verifying function failed");
-//   process.exit();
-// }
-
-// if (llvm.verifyModule(mod)) {
-//   console.error("Verifying module failed");
-//   process.exit();
-// }
-
-// mod.print();

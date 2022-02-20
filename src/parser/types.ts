@@ -1,6 +1,6 @@
 export type NumberLiteral = {
   type: "number";
-  value: string;
+  value: number;
 };
 
 export type Initializer = NumberLiteral;
