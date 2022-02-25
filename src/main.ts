@@ -7,10 +7,12 @@ import fs from "fs";
 const main = () => {
   try {
     const code = `
-      extern puts(s: &[i8]): i32
+      fn main(a: i32, b: i32): i32 {
+          let c: i32 = 44;
+          let d: i32 = 55;
 
-      let a = 2 
-      let b = 3
+          return 22;
+      }
     `;
 
     const tokens = tokenize(code);

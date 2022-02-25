@@ -25,13 +25,13 @@ export class DisplayableError extends Error {
 
     let length = 0;
     for (const [index, line] of lines.entries()) {
-      if (length <= this.index && length + line.length >= this.index) {
+      if (length + line.length + 1 >= this.index) {
         error_line_index = index;
 
         break;
       }
 
-      length += line.length;
+      length += line.length + 1;
     }
 
     assert(error_line_index !== null);
@@ -44,7 +44,7 @@ export class DisplayableError extends Error {
       }`
     );
     console.log(
-      `  ${chalk.blue("|")} ${" ".repeat(this.index)}${chalk.red(
+      `  ${chalk.blue("|")}${" ".repeat(this.index - length + 1)}${chalk.red(
         `${"^".repeat(this.len)} ${this.message}`
       )}`
     );

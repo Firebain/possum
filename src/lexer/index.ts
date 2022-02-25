@@ -24,7 +24,7 @@ const is_whitespace = (char: string) => {
 
 const is_new_line = (char: string) => char.charCodeAt(0) === 10;
 
-class Cursor {
+class Tokenizer {
   private index = 0;
 
   constructor(private str: string) {}
@@ -181,7 +181,7 @@ class Cursor {
 }
 
 export const tokenize = (str: string) => {
-  const cursor = new Cursor(str);
+  const cursor = new Tokenizer(str);
 
   const tokens: Token[] = [];
 
